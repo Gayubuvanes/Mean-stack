@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html ng-app="socialMediaApp">
+<head>
+  <title>Social Media App</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+
+  <style>
+    body { background-color: #181818; color: white; }
+    .horizontal-menu { background-color: #f8f9fa; padding: 10px; display: flex; justify-content: space-around; border-bottom: 1px solid #e0e0e0; }
+    .horizontal-menu a { text-decoration: none; color: #007bff; padding: 10px 15px; transition: background-color 0.3s; }
+    .horizontal-menu a:hover { background-color: #e0e0e0; border-radius: 5px; }
+    .container-fluid { padding: 0; margin: 0; }
+    .sidebar { background-color: #1a1a1a; padding: 20px; height: 100vh; }
+    .menu-icons { list-style-type: none; padding-left: 0; margin-bottom: 30px; }
+    .menu-icons li { margin: 15px 0; font-size: 20px; }
+    .menu-icons li i { margin-right: 10px; }
+    .menu-icons li:hover { cursor: pointer; color: #007bff; }
+    .list-group-item { background-color: #2b2b2b; color: white; margin-bottom: 10px; border: none; }
+    .post-feed { background-color: #181818; padding: 20px; height: 100vh; overflow-y: auto; }
+    .post { border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; border-radius: 8px; background-color: #1a1a1a; }
+    .post-header { display: flex; align-items: center; }
+    .post-header img { width: 40px; height: 30px; border-radius: 50%; margin-right: 10px; }
+    .post-content img { max-width: 40%; margin-top: 10px; }
+    .messages { background-color: #1a1a1a; padding: 20px; height: 100vh; }
+    .messages img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; }
+  </style>
+</head>
+
+<body ng-controller="MainController">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-3 sidebar">
+	 <h4 style="color: blue;">Menu</h4>
+
+        <ul class="menu-icons">
+          <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="reels.html"><i class="fas fa-camera"></i> Reels</a></li>
+          <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+          <li><a href="movies.html"><i class="fas fa-film"></i> Movies</a></li>
+          <li><a href="songs.html"><i class="fas fa-music"></i> Songs</a></li>
+          <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+          <li><a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+          <li><a href="signin.html"><i class="fas fa-user-plus"></i> Sign in</a></li>
+        </ul>
+
+        <h3>Trending Now</h3>
+        <ul class="list-group">
+          <li class="list-group-item" ng-repeat="trend in trends">
+            <span class="badge bg-secondary">{{ trend.category }}</span> {{ trend.title }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Post Feed -->
+      <div class="col-6 post-feed">
+        <div class="post" ng-repeat="post in posts">
+          <div class="post-header">
+            <img ng-src="{{ post.avatar }}" alt="User Avatar">
+            <h5>{{ post.user }}</h5>
+          </div>
+          <div class="post-content">
+            <p>{{ post.content }}</p>
+            <img ng-src="{{ post.image }}" alt="Post Image" class="img-fluid">
+          </div>
+          <br>
+          <div class="post-footer">
+            <button class="btn btn-light" ng-click="likePost(post.id)">
+              <i class="fa fa-thumbs-up"></i> Like ({{ post.likes.length }})
+            </button>
+            <button class="btn btn-light" ng-click="post.showCommentBox = !post.showCommentBox">
+              <i class="fa fa-comment"></i> Comment
+            </button>
+
+            <div ng-show="post.showCommentBox">
+              <input type="text" ng-model="newComment[post.id]" placeholder="Write a comment..." />
+              <button class="btn btn-primary" ng-click="commentPost(post.id)">
+                Submit
+              </button>
+            </div>
+
+            <div class="comments" ng-repeat="comment in post.comments">
+              <p><strong>{{ comment.username }}:</strong> {{ comment.text }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages Sidebar -->
+      <div class="col-3 messages">
+        <h3>Messages</h3>
+        <ul class="list-group">
+          <li class="list-group-item" ng-repeat="user in users" ng-click="selectContact(user)">
+            <img ng-src="{{ user.avatar }}" alt="User Avatar">
+            <span>{{ user.name }}</span>
+          </li>
+        </ul>
+        <div>
+          <h4>Chat with {{ activeContact.name }}</h4>
+          <div ng-repeat="message in activeContact.messages">
+            <div ng-class="{'text-right': message.sender === 'me'}">
+              <strong ng-if="message.sender === 'me'">Me:</strong>
+              <strong ng-if="message.sender !== 'me'">{{ activeContact.name }}:</strong>
+              {{ message.text }}
+            </div>
+          </div>
+          <input type="text" ng-model="newMessage" placeholder="Type a message..." />
+          <button ng-click="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script >
+var app = angular.module('socialMediaApp', []);
+
+app.controller('MainController', function($scope, $http) {
+  $scope.user = { id: 'user123', name: 'Current User' };
+
+  $scope.trends = [
+    { category: "#BRANDS", title: "New Brand Has Release" },
+    { category: "#FASHION", title: "Citayem Harajuku" },
+    { category: "#TUMBLER", title: "New Product" },
+    { category: "#ART NFT", title: "New NFT" }
+  ];
+
+  $scope.posts = [
+    { id: 'post1', user: 'Shadow', content: 'This is my new Exploration, what do you think?', image: 'i1.jpg', avatar: 'h1.jpg', likes: [], comments: [] },
+    { id: 'post2', user: 'Zakky', content: 'Wow amazing work!', image: 'i2.jpg', avatar: 'h2.png', likes: [], comments: [] }
+  ];
+
+  $scope.users = [
+    { name: 'Terizla', avatar: 'a1.jpeg' },
+    { name: 'Harley', avatar: 'a2.jpg' },
+    { name: 'Leomord', avatar: 'a3.jpg' },
+    { name: 'Ruby', avatar: 'a4.jpg' }
+  ];
+
+  $scope.activeContact = $scope.users[0];
+  $scope.newComment = {};
+
+  $scope.likePost = function(postId) {
+    const post = $scope.posts.find(p => p.id === postId);
+    if (!post.likes.find(like => like.userId === $scope.user.id)) {
+      post.likes.push({ userId: $scope.user.id, username: $scope.user.name });
+      $http.post('/api/like', { userId: $scope.user.id, postId: postId })
+        .then(response => console.log('Like saved:', response.data))
+        .catch(error => console.error('Error saving like:', error));
+    }
+  };
+
+  $scope.commentPost = function(postId) {
+    const commentText = $scope.newComment[postId];
+    if (commentText) {
+      const commentData = { postId, userId: $scope.user.id, username: $scope.user.name, text: commentText };
+      $http.post('http://localhost:5000/api/posts/comment', commentData)
+        .then(response => {
+          if (response.data.success) {
+            const post = $scope.posts.find(p => p.id === postId);
+            if (post) post.comments.push({ username: $scope.user.name, text: commentText });
+            $scope.newComment[postId] = '';
+          } else console.error('Error adding comment:', response.data.message);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  };
+
+  $scope.selectContact = function(contact) {
+    $scope.activeContact = contact;
+  };
+
+  $scope.newMessage = '';
+  $scope.sendMessage = function() {
+    if ($scope.newMessage.trim() !== '') {
+      $scope.activeContact.messages.push({ text: $scope.newMessage, sender: 'me' });
+      $scope.newMessage = '';
+    }
+  };
+});
+</script>
+</body>
+</html>

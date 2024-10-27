@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html ng-app="chatApp">
+<head>
+  <title>Chat Page</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body {
+      background-color: #eaeaea;
+    }
+    .container-fluid {
+      padding: 0;
+      height: 100vh;
+    }
+    .sidebar {
+      background-color: #1a1a1a;
+      padding: 20px;
+      height: 100vh;
+    }
+    .menu-icons {
+      list-style-type: none;
+      padding-left: 0;
+      margin-bottom: 30px;
+    }
+    .menu-icons li {
+      margin: 15px 0;
+      font-size: 20px;
+    }
+    .menu-icons li i {
+      margin-right: 10px;
+    }
+    .menu-icons li:hover {
+      cursor: pointer;
+      color: #007bff;
+    }
+    .chat-sidebar {
+      background-color: #2b3e50;
+      padding: 20px;
+      height: 100%;
+      color: white;
+    }
+    .chat-sidebar h4 {
+      color: #f1f1f1;
+    }
+    .contact {
+      padding: 15px 0;
+      border-bottom: 1px solid #495d73;
+      cursor: pointer;
+    }
+    .contact:hover {
+      background-color: #495d73;
+    }
+    .chat-window {
+      padding: 20px;
+      background-color: #fff;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-messages {
+      flex-grow: 1;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    .message {
+      margin-bottom: 15px;
+    }
+    .message.sent {
+      text-align: right;
+    }
+    .message-content {
+      display: inline-block;
+      padding: 10px 15px;
+      border-radius: 20px;
+      background-color: #f1f1f1;
+      max-width: 80%;
+    }
+    .message.sent .message-content {
+      background-color: #007bff;
+      color: white;
+    }
+    .message-input {
+      display: flex;
+      align-items: center;
+    }
+    .message-input input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      margin-right: 10px;
+    }
+    .message-input button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+
+<body ng-controller="ChatController">
+  <div class="container-fluid">
+    <div class="row h-100">
+      <!-- Sidebar (with Menu Icons) -->
+      <div class="col-3 sidebar">
+        <h4>Menu</h4>
+        <ul class="menu-icons">
+          <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="reels.html"><i class="fas fa-camera"></i> Reels</a></li>
+          <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+          <li><a href="movies.html"><i class="fas fa-film"></i> Movies</a></li>
+          <li><a href="songs.html"><i class="fas fa-music"></i> Songs</a></li>
+          <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+        </ul>
+      </div>
+
+      <!-- Chat Sidebar (Contacts) -->
+      <div class="col-3 chat-sidebar">
+        <h4>{{ currentUser.name }}</h4>
+        <input type="text" class="form-control my-3" placeholder="Search contacts">
+        <div class="contact" ng-repeat="contact in contacts" ng-click="selectContact(contact)">
+          <img ng-src="{{ contact.avatar }}" class="rounded-circle" alt="Avatar" width="40" height="40">
+          <span class="ml-3">{{ contact.name }}</span>
+        </div>
+      </div>
+
+      <!-- Chat Area -->
+      <div class="col-6 chat-window">
+        <h5>{{ activeContact.name }}</h5>
+        <div class="chat-messages">
+          <div class="message" ng-repeat="message in activeContact.messages" ng-class="{'sent': message.sender === 'me'}">
+            <div class="message-content">{{ message.text }}</div>
+          </div>
+        </div>
+
+        <!-- Input Box -->
+        <div class="message-input">
+          <input type="text" ng-model="newMessage" placeholder="Type your message...">
+          <button ng-click="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

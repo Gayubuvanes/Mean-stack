@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html ng-app="reelsApp">
+<head>
+  <title>Reels Page</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body {
+      background-color: #181818;
+      color: white;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    .container-fluid {
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar {
+      background-color: #1a1a1a;
+      padding: 20px;
+      height: 100vh;
+    }
+    .menu-icons {
+      list-style-type: none;
+      padding-left: 0;
+      margin-bottom: 30px;
+    }
+    .menu-icons li {
+      margin: 15px 0;
+      font-size: 20px;
+    }
+    .menu-icons li i {
+      margin-right: 10px;
+    }
+    .menu-icons li:hover {
+      cursor: pointer;
+      color: #007bff;
+    }
+    .reel-feed {
+      background-color: #000;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 0;
+    }
+    .reel {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .reel video {
+      width: 100%;
+      height: 100vh;
+      object-fit: cover;
+    }
+    .reel-info {
+      position: absolute;
+      bottom: 10%;
+      left: 5%;
+      color: white;
+    }
+    .reel-info h5 {
+      margin-bottom: 10px;
+    }
+    .reel-actions {
+      position: absolute;
+      bottom: 10%;
+      right: 5%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .reel-actions i {
+      font-size: 24px;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    .reel-actions i:hover {
+      color: #007bff;
+    }
+  </style>
+</head>
+
+<body ng-controller="ReelsController">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar (Menu Icons) -->
+      <div class="col-2 sidebar">
+        <!-- Menu with Icons -->
+        <ul class="menu-icons">
+         <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="reels.html"><i class="fas fa-camera"></i> Reels</a></li>
+          <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+          <li><a href="movies.html"><i class="fas fa-film"></i> Movies</a></li>
+          <li><a href="songs.html"><i class="fas fa-music"></i> Songs</a></li>
+          <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+        </ul>
+      </div>
+
+      <!-- Reels Feed (Main Content) -->
+      <div class="col-10 reel-feed">
+        <div class="reel" ng-repeat="reel in reels">
+          <video autoplay muted loop>
+            <source ng-src="{{ reel.videoSrc }}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <div class="reel-info">
+            <h5>{{ reel.user }}</h5>
+            <p>{{ reel.description }}</p>
+          </div>
+          <div class="reel-actions">
+            <i class="fas fa-heart"></i> <!-- Like icon -->
+            <i class="fas fa-comment"></i> <!-- Comment icon -->
+            <i class="fas fa-share"></i> <!-- Share icon -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Define AngularJS App
+    var app = angular.module('reelsApp', []);
+
+    // Main Controller for Reels Page
+    app.controller('ReelsController', function($scope) {
+      // Sample data for reels
+      $scope.reels = [
+        {
+          user: 'User1',
+          description: 'This is my first reel!',
+          videoSrc: 'https://www.w3schools.com/html/mov_bbb.mp4'
+        },
+        {
+          user: 'User2',
+          description: 'Enjoying my vacation!',
+          videoSrc: 'https://www.w3schools.com/html/movie.mp4'
+        },
+        {
+          user: 'User3',
+          description: 'Check out this cool dance move!',
+          videoSrc: 'https://www.w3schools.com/html/mov_bbb.mp4'
+        }
+      ];
+    });
+  </script>
+</body>
+</html>

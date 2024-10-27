@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="musicApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-y: auto;
+	    background-image: url('banner.jpg'); /* Replace with your image URL */
+      background-size: cover; /* Make the image cover the whole body */
+      background-position: center; /* Center the background image */
+      background-repeat: no-repeat;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            position: fixed;
+            width: 250px;
+            height: 100vh; /* Full height */
+            background-color: #1f1f1f;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-y: auto;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px 0;
+            font-size: 18px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .sidebar ul li a:hover {
+            color: #1db954;
+        }
+
+        /* Player section inside the sidebar */
+        .sidebar .player {
+            background-color: #1f1f1f;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .player img {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+        }
+
+        .sidebar .player-info {
+            display: flex;
+            flex-direction: column;
+            margin-left: 15px;
+        }
+
+        .sidebar .player-info h5 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .sidebar .player-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Main content area */
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            height: calc(100vh - 60px); /* Full height minus the player */
+            overflow-y: auto; /* Scrollable main content */
+        }
+
+        /* Search Bar */
+        .search-bar {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 50%;
+            padding: 10px 40px 10px 20px; /* Add padding for the icon */
+            border-radius: 5px;
+            border: 1px solid #1db954;
+            background-color: #1f1f1f;
+            color: white;
+        }
+
+        .search-bar input::placeholder {
+            color: #888;
+        }
+
+        .search-bar button {
+            position: absolute;
+            right: 5px; /* Position it inside the input */
+            border: none;
+            background: transparent;
+            color: #1db954;
+            cursor: pointer;
+            top: 50%; /* Center vertically */
+            transform: translateY(-50%); /* Adjust for exact center */
+        }
+
+        /* Banner styling */
+        .banner {
+            background: url('banner.jpg') center center no-repeat;
+            background-size: cover;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .banner h1 {
+            font-size: 48px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .banner p {
+            font-size: 20px;
+            margin-top: 20px;
+            color: #ccc;
+        }
+
+        .banner a {
+            color: #1db954;
+            font-size: 18px;
+            text-decoration: none;
+            border: 1px solid #1db954;
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+
+        .banner a:hover {
+            background-color: #1db954;
+            color: #fff;
+        }
+
+        /* New releases section */
+        .releases {
+            margin-top: 40px;
+        }
+
+        .release-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .release-item {
+            width: 200px;
+        }
+
+        .release-item img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .release-item h5 {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        .release-item p {
+            color: #888;
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+<body ng-controller="MusicController">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul>
+            <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> Artists</a></li>
+            <li><a href="#"><i class="fas fa-record-vinyl"></i> Releases</a></li>
+            <li><a href="#"><i class="fas fa-calendar-alt"></i> Events</a></li>
+            <li><a href="#"><i class="fas fa-podcast"></i> Podcasts</a></li>
+            <li><a href="#"><i class="fas fa-music"></i> Songs</a></li>
+        </ul>
+
+        <!-- Music Player Section (fixed to the bottom of the sidebar) -->
+        <div class="player">
+            <img ng-src="{{currentSong.img}}" alt="Current Song">
+            <div class="player-info">
+                <h5>{{currentSong.title}}</h5>
+                <p>{{currentSong.artist}}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" placeholder="Search for songs, artists, or albums...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+
+        <!-- Banner -->
+        <div class="banner">
+            <h1>Record Label & Music Streaming</h1>
+            <p>There are many variations of passages of Lorem Ipsum available.</p>
+            <a href="#">Buy Now</a> <a href="#">Learn More</a>
+        </div>
+
+        <!-- New Releases -->
+        <div class="releases">
+            <h3>New Releases</h3>
+            <div class="release-grid">
+                <div class="release-item" ng-repeat="release in newReleases">
+                    <img ng-src="{{release.img}}" alt="{{release.title}}">
+                    <h5>{{release.title}}</h5>
+                    <p>{{release.artist}}</p>
+                </div>
+            </div>
+        </div>
+	<div class="releases">
+            <h3>Artists</h3>
+            <div class="release-grid">
+                <div class="release-item" ng-repeat="release in artists">
+                    <img ng-src="{{release.img}}" alt="{{release.title}}">
+                    <h5>{{release.title}}</h5>
+                    <p>{{release.artist}}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script>
+        var app = angular.module('musicApp', []);
+
+        app.controller('MusicController', function ($scope) {
+            // New Releases data
+            $scope.newReleases = [
+                { title: 'Epic Cinematic', artist: 'AudioPizza', img: 'st1.jpg' },
+                { title: 'Jazz Vibes', artist: 'John Doe', img: 'st2.jpg' },
+                { title: 'Rock Beats', artist: 'The Rockers', img: 'st3.jpg' },
+                { title: 'Chillwave', artist: 'DJ Chill', img: 'str4.jpg' }
+            ];
+		            $scope.artists = [
+                { title: 'Epic Cinematic', artist: 'AudioPizza', img: 's1.jpg' },
+                { title: 'Jazz Vibes', artist: 'John Doe', img: 's2.jpg' },
+                { title: 'Rock Beats', artist: 'The Rockers', img: 's3.jpg' },
+                { title: 'Chillwave', artist: 'DJ Chill', img: 's4.jpg' }
+            ];
+
+
+
+            // Current song for the player
+            $scope.currentSong = {
+                title: 'Epic Cinematic',
+                artist: 'AudioPizza',
+                img: 'st1.jpg'
+            };
+        });
+    </script>
+
+</body>
+</html>

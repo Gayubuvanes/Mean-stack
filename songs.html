@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="musicApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Streaming Web App</title>
+
+  <!-- AngularJS CDN -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <style>
+    /* Base Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color:black;
+      color:white;      
+
+    }
+    .horizontal-menu {
+      background-color: black;
+      padding: 10px;
+      display: flex;
+      justify-content: space-around;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .horizontal-menu a {
+      text-decoration: none;
+      color: #007bff;
+      padding: 10px 15px;
+      transition: background-color 0.3s;
+    }
+
+    .horizontal-menu a:hover {
+      background-color: #e0e0e0;
+      border-radius: 5px;
+    }
+    .music-app {
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    .topbar {
+      background-color: black;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e0e0e0;
+     color:white;
+    }
+
+    .topbar .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .topbar .nav-links a {
+      text-decoration: none;
+      color: white;
+      font-weight: 500;
+    }
+
+    .topbar .search-bar {
+      flex-grow: 1;
+      margin-left: 40px;
+      margin-right: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .topbar .search-bar input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid white;
+      border-radius: 4px;
+    }
+
+    .topbar .search-bar input::placeholder {
+      color: #bbb;
+    }
+
+    .topbar .user-profile {
+      display: flex;
+      align-items: center;
+    }
+
+    .topbar .user-profile img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
+
+    /* Sidebar */
+    .content {
+      display: flex;
+      height: 100%;
+	margin:0px;
+    }
+
+    .sidebar {
+      background-color: black;
+      padding: 25px;
+      width: 250px;
+	height :1000px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo h2 {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+
+    .menu, .library, .playlist, .others {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      margin-bottom: 0px;
+    }
+
+    .menu li, .library li, .playlist li, .others li {
+      padding: 10px 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+
+    .menu li i, .library li i, .playlist li i, .others li i {
+      margin-right: 10px;
+      color: #007bff;
+    }
+
+    .menu li a {
+      text-decoration: none;
+      color: black;
+      display: flex;
+      align-items: center;
+    }
+
+    .library h4, .playlist h4 {
+      margin-bottom: 10px;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+      background-color: black;
+      margin-left:0px;
+    }
+
+    .header h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .music-section {
+      background-color: black;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+     
+    }
+
+    .music-section .btn {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .top-artists {
+      margin-bottom: 20px;
+    }
+
+    .artists-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+    }
+
+    .artist {
+      background-color: #f7f8fa;
+      padding: 20px;
+      text-align: center;
+      border-radius: 8px;
+      color:black;
+    }
+.artist img, .collection-item img {
+      width: 100px; /* Change the width as needed */
+      height: 150px; /* Change the height as needed */
+      border-radius: 4px; /* Use a smaller border-radius for a non-avatar style */
+      margin-bottom: 5px;
+    }
+
+    .collection-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+    }
+
+    .collection-item {
+      background-color: #f7f8fa;
+      padding: 20px;
+      text-align: center;
+      border-radius: 8px;
+      color:black;
+    }
+
+    /* New: Top Genre */
+    .top-genre {
+      margin-bottom: 20px;
+    }
+
+    .genre-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .genre {
+      padding: 10px 20px;
+      border-radius: 20px;
+      background-color: #ececec;
+      text-align: center;
+      color: white;
+    }
+
+    .genre.hip-hop { background-color: #e57373; }
+    .genre.electro { background-color: #4fc3f7; }
+    .genre.jazz { background-color: #ba68c8; }
+    .genre.indie { background-color: #ffb74d; }
+    .genre.dance-beat { background-color: #81c784; }
+    .genre.classical { background-color: #9575cd; }
+    .genre.metal { background-color: #f06292; }
+    .genre.rock { background-color: #757575; }
+    .genre.country { background-color: #aed581; }
+/* Top Songs List */
+
+.top-songs-list {
+      padding: 25px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      margin-right: 5px;
+	margin-left:0px;
+      width: 250px;
+      color:black;
+    }
+
+    .top-songs-list ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .top-songs-list li {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .song-info {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .song-rank {
+      font-size: 18px;
+      margin-right: 10px;
+    }
+
+    .song-album-cover {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      margin-right: 10px;
+    }
+
+    .song-details {
+      flex-grow: 1;
+    }
+
+    .song-title {
+      font-weight: bold;
+    }
+
+    .song-artist {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .song-duration {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .more-list {
+      display: block;
+      text-align: right;
+      color: #007bff;
+      text-decoration: none;
+      margin-top: 10px;
+    }
+
+    /* Now Playing Section */
+    .now-playing-content {
+      background-color: #fff;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px;
+    }
+
+    .now-playing-album {
+      margin-bottom: 15px;
+    }
+
+    .now-playing-album-cover {
+      width: 100px;
+      height: 100px;
+      border-radius: 10px;
+    }
+
+    .now-playing-info h4 {
+      font-size: 18px;
+      margin: 10px 0 5px;
+    }
+
+    .now-playing-info p {
+      font-size: 16px;
+      color: #666;
+      margin: 0;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      display: flex;
+      align-items: center;
+      
+      margin-top: 10px;
+    }
+
+    .progress-time, .total-time {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .progress-bar {
+      flex-grow: 1;
+      height: 5px;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 0 10px;
+    }
+
+    .progress {
+      height: 100%;
+      background-color: #007bff;
+      width: 50%; /* Adjust this value dynamically with JS */
+    }
+
+    /* Play Button */
+    .play-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+.music-controls {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 24px;
+  color: #007bff;
+}
+
+.music-controls i {
+  cursor: pointer;
+}
+
+.lyrics-btn {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+
+  </style>
+</head>
+<body ng-controller="MusicController">
+ <!-- Horizontal Menu -->
+  <div class="horizontal-menu">
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="reels.html"><i class="fas fa-camera"></i> Reels</a>
+    <a href="messages.html"><i class="fas fa-envelope"></i> Messages</a>
+    <a href="movies.html"><i class="fas fa-film"></i> Movies</a>
+    <a href="songs.html"><i class="fas fa-music"></i> Songs</a>
+    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+  </div>
+  <div class="music-app">
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="nav-links">
+        <a href="#">Music</a>
+        <a href="#">Podcast</a>
+        <a href="#">Radio</a>
+        <a href="#">Live</a>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" placeholder="Search...">
+      </div>
+
+      <div class="user-profile">
+        <span>The Rock</span>
+        <img src="a1.jpeg" alt="User Profile Picture">
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="logo">
+          <h2>Mytunes</h2>
+           
+        </div>
+        
+        <!-- Updated Sidebar with Icons -->
+        <ul class="menu">
+          
+        <div class="library">
+          <h4>Library</h4>
+          <ul>
+            <li><i class="fas fa-music"></i> My Music</li>
+            <li><i class="fas fa-record-vinyl"></i> Albums</li>
+            <li><i class="fas fa-user"></i> Artists</li>
+          </ul>
+        </div>
+
+        <div class="playlist">
+          <h4>Playlist</h4>
+          <ul>
+            <li><i class="fas fa-heart"></i> Cover</li>
+            <li><i class="fas fa-star"></i> Favorites</li>
+            <li><i class="fas fa-share"></i> Shared</li>
+            <li><i class="fas fa-download"></i> Downloads</li>
+          </ul>
+        </div>
+
+        <div class="others">
+	<h4>Others</h4>
+          <ul>
+            <li><i class="fas fa-cog"></i> Settings</li>
+            <li><i class="fas fa-sign-out-alt"></i> Logout</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="header">
+          <h2>Music Steaming Web App</h2>
+        </div>
+
+        <div class="music-section">
+          <h3>Our Features</h3>
+          <p>Get Premium Access & Unlock All Popular Songs</p>
+          <button class="btn">Get Now</button>
+        </div>
+
+               <!-- Top Artists Section -->
+        <div class="top-artists music-section">
+          <h3>Top Artists</h3>
+          <div class="artists-grid">
+            <div class="artist" ng-repeat="artist in topArtists">
+              <img ng-src="{{artist.image}}" alt="{{artist.name}}" style="width: 50px; height: 50px; border-radius: 50%; margin-bottom: 5px;">
+              <h4>{{artist.name}}</h4>
+              <p>{{artist.genre}}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Collections Section -->
+        <div class="top-collections music-section">
+          <h3>Top Collections</h3>
+          <div class="collection-grid">
+            <div class="collection-item" ng-repeat="collection in topCollections">
+              <img ng-src="{{collection.image}}" alt="{{collection.title}}" style="width: 50px; height: 50px; border-radius: 8px; margin-bottom: 5px;">
+              <h4>{{collection.title}}</h4>
+              <p>{{collection.description}}</p>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- New: Top Genre Section -->
+        <div class="top-genre">
+          <h3>Top Genre</h3>
+          <div class="genre-grid">
+            <div class="genre hip-hop">Hip Hop</div>
+            <div class="genre electro">Electro Pop</div>
+            <div class="genre jazz">Jazz</div>
+            <div class="genre indie">Indie</div>
+            <div class="genre dance-beat">Dance Beat</div>
+            <div class="genre classical">Classical</div>
+            <div class="genre metal">Metal</div>
+            <div class="genre rock">Rock</div>
+            <div class="genre country">Country</div>
+          </div>
+        </div>
+      </div>
+
+ <div class="main-content">
+      <div class="header">
+        <h2>Top Weekly Songs</h2>
+      </div>
+      <div class="music-section top-songs-list">
+        <ul>
+          <li>
+            <img src="str4.jpg" alt="Album Cover" class="song-album-cover">
+            <div class="song-info">
+              <div class="song-details">
+                <span class="song-rank">1.</span>
+                <span class="song-title">Chutamalle</span><br>
+                <span class="song-artist">Devara</span><br>
+                <span class="song-duration">3:45</span>
+              </div>
+            </div>
+          </li>
+          <li>
+            <img src="stt3.jpg" alt="Album Cover" class="song-album-cover">
+            <div class="song-info">
+              <div class="song-details">
+                <span class="song-rank">2.</span>
+                <span class="song-title">Perfect</span><br>
+                <span class="song-artist">Ed Sheeren</span><br>
+                <span class="song-duration">4:12</span>
+              </div>
+            </div>
+          </li>
+          <li>
+            <img src="stt2.jpg" alt="Album Cover" class="song-album-cover">
+            <div class="song-info">
+              <div class="song-details">
+                <span class="song-rank">3.</span>
+                <span class="song-title">Manasillayoo</span><br>
+                <span class="song-artist">Vellaiyan</span><br>
+                <span class="song-duration">3:30</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <a href="#" class="more-list">See all top songs</a>
+      </div>
+
+      <div class="header">
+        <h2>Now Playing</h2>
+      </div>
+      <div class="now-playing-content">
+        <div class="now-playing-album">
+          <img src="stt1.jpg" alt="Now Playing Album Cover" class="now-playing-album-cover">
+        </div>
+        <div class="now-playing-info">
+          <h4>Now Playing: Matta</h4>
+          <p>THE GOAT</p>
+        </div>
+        <div class="progress-container">
+          <span class="progress-time">0:00</span>
+          <div class="progress-bar">
+            <div class="progress"></div>
+          </div>
+          <span class="total-time">3:45</span>
+        </div>
+<div class="music-controls">
+      <div class="music-controls">
+      <i class="fas fa-backward"></i>
+      <i class="fas fa-play-circle"></i>
+      <i class="fas fa-forward"></i>
+    </div>
+    <a href="#" class="lyrics-btn">Lyrics</a>
+  </div>
+          
+    </div>
+              </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- AngularJS Script -->
+  <script>
+    var app = angular.module('musicApp', []);
+
+    app.controller('MusicController', function($scope) {
+      // Sample Data
+      $scope.artists = ['Aniruth', 'Yuvan', 'Illairaja', 'Vijay Antony', 'Ed Sheeran', 'A R Rahman'];
+      $scope.collections = ['Collection 1', 'Collection 2', 'Collection 3', 'Collection 4'];
+       $scope.topArtists = [
+    { name: 'Anirudh Ravichander', genre: 'Pop', image: 's1.jpg' },
+    { name: 'Yuvan Shankar Raja', genre: 'U1Drugs', image: 's2.jpg' },
+    { name: 'Ilayaraja', genre: 'Alternative', image: 's3.jpg' },
+{ name: 'Vijay Antony', genre: 'Vibe', image: 's4.jpg' },
+{ name: 'Ed Sheeran', genre: 'Romance', image: 'st5.jpg' },
+{ name: ' A R Rahman', genre: 'Melodies', image: 'st6.jpg' },
+
+  ];
+ $scope.topCollections = [
+    { title: 'Chill Out', description: 'Relax and unwind', image: 'st1.jpg' },
+    { title: 'Top Hits', description: 'Most popular songs', image: 'st2.jpg' },
+    { title: 'Long Drive', description: 'Get along and enjoy the ride!', image: 'st3.jpg' },
+{ title: 'Peppy Romance', description: 'Get high on these peppy numbers Cover', image: 'st4.jpg' },
+{ title: 'Mudhal kadhal', description: 'Love at First Sightuu!', image: 'st5.jpg' },
+{ title: 'Kadhal vali', description: 'Time to mend broken heart with bea', image: 'st6.jpg' },
+
+  ];
+      $scope.topSongs = [
+        { rank: 1, title: 'Levitating', artist: 'Dua Lipa' },
+        { rank: 2, title: 'Blinding Lights', artist: 'The Weeknd' },
+        { rank: 3, title: 'Peaches', artist: 'Justin Bieber' }
+      ];
+
+      // Current Song Playing
+      $scope.currentSong = { title: 'Levitating', artist: 'Dua Lipa' };
+    });
+  </script>
+</body>
+</html>

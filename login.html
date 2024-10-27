@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('back.jpg');
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            width: 350px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #0083b0;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        .message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            display: block;
+        }
+        .signup-link a {
+            color: #0083b0;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body ng-app="loginApp" ng-controller="LoginController">
+
+    <div class="login-container">
+        <h2>Login</h2>
+        <form ng-submit="handleSubmit()">
+            <div>
+                <label>Email Address</label>
+                <input type="email" placeholder="Enter email" ng-model="email" required />
+            </div>
+            <div>
+                <label>Password</label>
+                <input type="password" placeholder="Password" ng-model="password" required />
+            </div>
+            <button type="submit" ng-disabled="loading">
+                {{ loading ? 'Logging in...' : 'Submit' }}
+            </button>
+            <p class="message" ng-if="message">{{ message }}</p>
+        </form>
+        <p class="signup-link">
+            Don't have an account? 
+            <a href="signin.html" ng-click="handleSectionClick('SignUp')">Sign In</a>
+        </p>
+    </div>
+
+    <script>
+        var app = angular.module('loginApp', []);
+
+        app.controller('LoginController', function($scope, $http, $window) {
+            $scope.email = '';
+            $scope.password = '';
+            $scope.message = '';
+            $scope.loading = false;
+
+            $scope.handleSubmit = async function() {
+                $scope.message = ''; // Clear previous messages
+
+                if ($scope.email && $scope.password) {
+                    $scope.loading = true; // Start loading
+                    try {
+                        const response = await $http.post('http://localhost:5000/api/login', {
+                            email: $scope.email,
+                            password: $scope.password
+                        });
+
+                        if (response.status === 200) {
+                            alert('Login successful!'); // Alert message for success
+                            $window.location.href = 'index.html'; // Redirect to index page
+                        } else {
+                            $scope.message = response.data.message; // Show error message
+                        }
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        $scope.message = 'An error occurred during login. Please try again.';
+                    } finally {
+                        $scope.loading = false; // End loading
+                    }
+                } else {
+                    $scope.message = 'Please enter your email and password.';
+                }
+            };
+
+            $scope.handleSectionClick = function(section) {
+                console.log('Navigating to:', section);
+            };
+        });
+    </script>
+</body>
+</html>

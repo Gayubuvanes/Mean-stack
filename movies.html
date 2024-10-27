@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="movieApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            flex-direction: row;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #1a1a1a;
+            width: 250px;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            border-right: 2px solid #333;
+        }
+
+        .menu-icons {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 30px;
+        }
+
+        .menu-icons li {
+            margin: 15px 0;
+            font-size: 20px;
+        }
+
+        .menu-icons li i {
+            margin-right: 10px;
+        }
+
+        .menu-icons li:hover {
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-left: 250px; /* Push content to the right of the sidebar */
+            width: calc(100% - 250px); /* Adjust width of the main content */
+            padding: 20px;
+        }
+
+        .navbar {
+            background-color: #000;
+            padding: 15px;
+        }
+
+        .navbar-brand {
+            color: white;
+        }
+
+        .nav-link {
+            color: #999;
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .search-bar {
+            width: 200px;
+        }
+
+        .section-title {
+            margin: 20px 0;
+        }
+
+        .movie-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .movie-card {
+            background-color: #2b2b2b;
+            padding: 10px;
+            width: 250px;
+            margin-bottom: 20px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .movie-card img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .movie-info {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body ng-controller="MovieController">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul class="menu-icons">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="reels.html"><i class="fas fa-camera"></i> Reels</a></li>
+            <li><a href="messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
+            <li><a href="movies.html"><i class="fas fa-film"></i> Movies</a></li>
+            <li><a href="songs.html"><i class="fas fa-music"></i> Songs</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="#">Movie Hunter</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="#horror-section">Horror</a>
+                <a class="nav-link" href="#comedy-section">Comedy</a>
+                <a class="nav-link" href="#action-section">Action</a>
+                <a class="nav-link" href="#romance-section">Romance</a>
+                <a class="nav-link" href="#animation-section">Animation</a>
+            </div>
+            <form class="ml-auto">
+                <input type="text" class="form-control search-bar" placeholder="Enter movie name">
+            </form>
+        </nav>
+
+        <!-- Latest Trailers Section -->
+        <div class="container">
+            <h2 class="section-title">Latest Trailers</h2>
+            <div class="movie-grid">
+                <div class="movie-card" ng-repeat="movie in latestTrailers">
+                    <img ng-src="{{movie.img}}" alt="{{movie.title}}">
+                    <div class="movie-info">
+                        <h5>{{movie.title}}</h5>
+                        <p>{{movie.year}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horror Section -->
+            <h2 id="horror-section" class="section-title">Horror</h2>
+            <div class="movie-grid">
+                <div class="movie-card" ng-repeat="movie in horror">
+                    <img ng-src="{{movie.img}}" alt="{{movie.title}}">
+                    <div class="movie-info">
+                        <h5>{{movie.title}}</h5>
+                        <p>{{movie.year}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comedy Section -->
+            <h2 id="comedy-section" class="section-title">Comedy</h2>
+            <div class="movie-grid">
+                <div class="movie-card" ng-repeat="movie in comedy">
+                    <img ng-src="{{movie.img}}" alt="{{movie.title}}">
+                    <div class="movie-info">
+                        <h5>{{movie.title}}</h5>
+                        <p>{{movie.year}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Section -->
+            <h2 id="action-section" class="section-title">Action</h2>
+            <div class="movie-grid">
+                <div class="movie-card" ng-repeat="movie in action">
+                    <img ng-src="{{movie.img}}" alt="{{movie.title}}">
+                    <div class="movie-info">
+                        <h5>{{movie.title}}</h5>
+                        <p>{{movie.year}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Romance Section -->
+            <h2 id="romance-section" class="section-title">Romance</h2>
+            <div class="movie-grid">
+                <div class="movie-card" ng-repeat="movie in romance">
+                    <img ng-src="{{movie.img}}" alt="{{movie.title}}">
+                    <div class="movie-info">
+                        <h5>{{movie.title}}</h5>
+                        <p>{{movie.year}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Animation Section -->
+            <h2 id="animation-section" class="section-title">Animation</h2>
+            <div class="movie-grid">
+                <div class="movie-card" ng-repeat="movie in animation">
+                    <img ng-src="{{movie.img}}" alt="{{movie.title}}">
+                    <div class="movie-info">
+                        <h5>{{movie.title}}</h5>
+                        <p>{{movie.year}}</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script>
+        var app = angular.module('movieApp', []);
+
+        app.controller('MovieController', function ($scope) {
+            $scope.latestTrailers = [
+                { title: 'GOAT', year: 2024, img: 'm1.jpg' },
+                { title: 'THAGALAN', year: 2024, img: 'm2.jpg' },
+                { title: 'DEVARA', year: 2024, img: 'm4.jpg' },
+                { title: 'PUSH PA 2', year: 2024, img: 'm5.jpg' }
+            ];
+
+            $scope.horror = [
+                { title: 'THE CONJURING', year: 2007, img: 'hm3.jpg' },
+                { title: 'CURSE OF NUN', year: 2008, img: 'hm1.jpg' },
+                { title: 'KANCHANA', year: 2015, img: 'hm4.jpg' },
+                { title: 'ARANMANAI', year: 2018, img: 'hm2.jpg' }
+            ];
+
+            $scope.comedy = [
+                { title: 'Varthapadatha Valiba Sangam', year: 2012, img: 'cm2.jpg' },
+                { title: 'Kalakalappu', year: 2013, img: 'cm4.jpg' },
+                { title: 'Athavan', year: 2015, img: 'cm1.jpg' },
+                { title: 'Kedi Billa Killadi Ranga', year: 2018, img: 'cm3.jpg' }
+            ];
+
+            $scope.action = [
+                { title: 'WAR', year: 2017, img: 'am1.jpg' },
+                { title: 'RRR', year: 2022, img: 'am2.jpg' },
+                { title: 'Salaar', year: 2021, img: 'am3.jpg' },
+                { title: 'Vikram', year: 2022, img: 'am4.jpg' }
+            ];
+
+            $scope.romance = [
+                { title: 'Sita Raman', year: 2023, img: 'rm3.jpg' },
+                { title: 'Three', year: 2008, img: 'rm4.jpg' },
+                { title: '96', year: 2019, img: 'rm1.jpg' },
+                { title: 'Vinnaithaandi Varuvaayaa', year: 2015, img: 'rm2.jpg' }
+            ];
+
+            $scope.animation = [
+                { title: 'The Lion King', year: 2018, img: 'anm3.jpg' },
+                { title: 'Frozen', year: 2018, img: 'anm2.jpg' },
+                { title: 'Kung Fu Panda', year: 2022, img: 'anm1.jpg' },
+                { title: 'Tangled', year: 2018, img: 'anm4.jpg' }
+            ];
+        });
+    </script>
+
+</body>
+</html>
